@@ -47,19 +47,27 @@ export default function ServiceProducts() {
   const [loading, setLoading] = useState(true);
 
   const router = useRouter();
+
+
+  
   useEffect(() => {
     const serviceTypes = data.serviceTypes;
     if (serviceTypes.includes(serviceType)) {
       setIsValidServiceType(true);
-
+  
       setLoading(true);
       fetch(`/api/services?serviceType=${serviceType}`)
         .then((res) => res.json())
         .then((data) => {
-          if (data) {
+          if (data && data.length > 0) {
             console.log("data received is: ", data);
-
-            const servicesWithReviews = data.map(async (service) => {
+  
+           
+            const approvedServices = data.filter(service => 
+              service.isApproved === true && service.isRejected === false
+            );
+  
+            const servicesWithReviews = approvedServices.map(async (service) => {
               try {
                 const reviewsResponse = await fetch(
                   `/api/reviews/service/${service.id}`
@@ -68,7 +76,7 @@ export default function ServiceProducts() {
                   const reviewsData = await reviewsResponse.json();
                   return { 
                     ...service, 
-                    reviews: reviewsData  // Store the entire reviews object
+                    reviews: reviewsData 
                   };
                 }
                 return service;
@@ -80,12 +88,14 @@ export default function ServiceProducts() {
                 return service;
               }
             });
-
+  
             Promise.all(servicesWithReviews).then((updatedServices) => {
               setServices(updatedServices);
               setLoading(false);
             });
           } else {
+           
+            setServices([]);
             setLoading(false);
           }
         })

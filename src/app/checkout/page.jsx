@@ -24,7 +24,7 @@ function StripeCheckout() {
   const [error, setError] = useState("");
   const [processing, setProcessing] = useState(false);
   const [discounts, setDiscounts] = useState(null);
-  const [useLoyaltyPoints, setUseLoyaltyPoints] = useState(true);
+  const [useLoyaltyPoints, setUseLoyaltyPoints] = useState(false);
   const [signupDiscountData, setSignupDiscountData] = useState(null);
   const [priceDetails, setPriceDetails] = useState({
     originalPrice: 0,

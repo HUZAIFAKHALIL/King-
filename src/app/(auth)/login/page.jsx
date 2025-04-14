@@ -91,11 +91,11 @@ export default function Login() {
       <div className="w-full lg:w-[45%] p-8 flex items-center justify-center bg-white">
         <div className="w-full max-w-md">
           <div className="mb-8">
-            <h1 className="text-3xl font-bold mb-2">Welcome back</h1>
+            <h1 className="text-3xl font-bold mb-2">Welcome</h1>
             <p className="text-gray-600">Please enter your details to sign in</p>
           </div>
 
-          <div className="flex gap-3 mb-8">
+          {/* <div className="flex gap-3 mb-8">
             <button className="flex-1 py-3 px-4 border border-gray-200 rounded-xl flex items-center justify-center gap-2 hover:bg-gray-50 transition-colors">
               <Apple className="w-5 h-5" />
             </button>
@@ -105,13 +105,13 @@ export default function Login() {
             <button className="flex-1 py-3 px-4 border border-gray-200 rounded-xl flex items-center justify-center gap-2 hover:bg-gray-50 transition-colors">
               <Facebook className="w-5 h-5" />
             </button>
-          </div>
+          </div> */}
 
-          <div className="flex items-center gap-4 mb-8">
+          {/* <div className="flex items-center gap-4 mb-8">
             <div className="h-[1px] flex-1 bg-gray-200"></div>
             <span className="text-gray-500">or</span>
             <div className="h-[1px] flex-1 bg-gray-200"></div>
-          </div>
+          </div> */}
 
           <form onSubmit={handleSubmit} className="space-y-6">
             <div>
@@ -175,7 +175,7 @@ export default function Login() {
       <div className="hidden lg:block lg:w-[55%] relative">
         <div className="absolute inset-0 bg-[#2B4C3F]/10"></div>
         <div className="h-full w-full object-cover" style={{
-          backgroundImage: `url('https://images.pexels.com/photos/271624/pexels-photo-271624.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2')`,
+          backgroundImage: `url('../../images/login.jpeg')`,
           backgroundSize: 'cover',
           backgroundPosition: 'center',
         }}></div>

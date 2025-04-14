@@ -85,7 +85,7 @@ export default function Signup() {
             <p className="text-gray-600">Join us today and start your journey</p>
           </div>
 
-          <div className="flex gap-3 mb-8">
+          {/* <div className="flex gap-3 mb-8">
             <button className="flex-1 py-3 px-4 border border-gray-200 rounded-xl flex items-center justify-center gap-2 hover:bg-gray-50 transition-colors">
               <Apple className="w-5 h-5" />
             </button>
@@ -101,7 +101,7 @@ export default function Signup() {
             <div className="h-[1px] flex-1 bg-gray-200"></div>
             <span className="text-gray-500">or</span>
             <div className="h-[1px] flex-1 bg-gray-200"></div>
-          </div>
+          </div> */}
 
           <form onSubmit={handleSubmit} className="space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -202,6 +202,7 @@ export default function Signup() {
                     <option value="">Select your role</option>
                     <option value="BUYER">Buyer</option>
                     <option value="SELLER">Seller</option>
+                    <option value="ADMIN">admin</option>
                   </select>
                   <span className="absolute inset-y-0 right-3 flex items-center pointer-events-none text-gray-500">
                     ▼

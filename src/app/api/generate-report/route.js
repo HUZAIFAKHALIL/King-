@@ -144,8 +144,6 @@ export async function generateSystemReport(userType) {
   try {
     // Explicitly define the models to include, excluding FlightService
     const modelsToFetch = [
-      { name: 'ChatMessage', model: prisma.chatMessage },
-      { name: 'Promotion', model: prisma.promotion },
       { name: 'LoyaltyDiscount', model: prisma.loyaltyDiscount },
       { name: 'SignupDiscount', model: prisma.signupDiscount },
       { name: 'User', model: prisma.user },
