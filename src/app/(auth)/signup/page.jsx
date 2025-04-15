@@ -71,7 +71,7 @@ export default function Signup() {
       <div className="hidden lg:block lg:w-[45%] relative">
         <div className="absolute inset-0 bg-[#2B4C3F]/10"></div>
         <div className="h-full w-full object-cover" style={{
-          backgroundImage: `url('https://images.pexels.com/photos/6267/menu-restaurant-vintage-table.jpg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2')`,
+          backgroundImage: `url('./images/signup.jpeg')`,
           backgroundSize: 'cover',
           backgroundPosition: 'center',
         }}></div>
@@ -202,7 +202,7 @@ export default function Signup() {
                     <option value="">Select your role</option>
                     <option value="BUYER">Buyer</option>
                     <option value="SELLER">Seller</option>
-                    <option value="ADMIN">admin</option>
+                    {/* <option value="ADMIN">admin</option> */}
                   </select>
                   <span className="absolute inset-y-0 right-3 flex items-center pointer-events-none text-gray-500">
                     ▼

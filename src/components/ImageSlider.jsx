@@ -3,43 +3,45 @@ import useEmblaCarousel from 'embla-carousel-react';
 import AutoPlay from 'embla-carousel-autoplay';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 
+
 const slides = [
   {
-    url: "../../images/slider/1.jpeg",
+    url: "/images/slider/1.jpeg",
     title: "Luxurious Getaways ",
     subtitle: "Discover Qatar's finest resorts"
   },
   {
-    url: "../../images/slider/2.jpeg",
+    url: "/images/slider/2.jpeg",
     title: "Majestic Doha Skyline",
     subtitle: "Marvel at Qatar's modern wonder"
   },
   {
-    url: "../../images/slider/3.jpeg",
+    url: "/images/slider/3.jpeg",
     title: "Explore Qatar",
     subtitle: "Discover, Book and Enjoy"
   },
   {
-    url: "../../images/slider/4.jpeg",
+    url: "/images/slider/4.jpeg",
     title: "Enchanting Souq Waqif",
     subtitle: "Step into Qatar's timeless Charm"
   },
   {
-    url: "../../images/slider/5.jpeg",
+    url: "/images/slider/5.jpeg",
     title: "Explore Desert Adventures",
     subtitle: "Embrace the spirit of the Sands"
   },
   {
-    url: "../../images/slider/6.jpeg",
+    url: "/images/slider/6.jpeg",
     title: "Vibrant Cities",
     subtitle: "Experience the heartbeat of urban life"
   },  
   {
-    url: "../../images/slider/7.jpeg",
+    url: "/images/slider/7.jpeg",
     title: "Adventure in Qatar",
     subtitle: "Experience Thrills Like No Other"
   }
 ];
+
 
 export default function ImageSlider() {
   const [emblaRef, emblaApi] = useEmblaCarousel({ loop: true }, [

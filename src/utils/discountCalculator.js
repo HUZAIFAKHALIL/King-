@@ -1,7 +1,3 @@
-import { PrismaClient } from '@prisma/client';
-
-const prisma = new PrismaClient();
-
 export function calculateDiscountedPrice(originalPrice, discounts) {
   let finalPrice = originalPrice;
   const appliedDiscounts = [];
@@ -17,7 +13,7 @@ export function calculateDiscountedPrice(originalPrice, discounts) {
     appliedDiscounts.push({
       type: 'SIGNUP',
       amount: discountAmount,
-      description: 'New user signup discount'
+      description: 'New user signup discount (10%)'
     });
   }
 
@@ -45,26 +41,4 @@ export function calculateDiscountedPrice(originalPrice, discounts) {
     totalDiscount: originalPrice - finalPrice,
     appliedDiscounts
   };
-}
-
-export async function markDiscountsAsUsed(userId, appliedDiscounts) {
-  try {
-    const discountTypes = appliedDiscounts.map(discount => discount.type);
-
-    if (discountTypes.includes('SIGNUP')) {
-      await prisma.signupDiscount.update({
-        where: { userId },
-        data: { isUsed: true }
-      });
-    }
-
-    if (discountTypes.includes('LOYALTY')) {
-      await prisma.loyaltyDiscount.update({
-        where: { userId },
-        data: { isUsed: true }
-      });
-    }
-  } catch (error) {
-    console.error("Error marking discounts as used:", error);
-  }
 }

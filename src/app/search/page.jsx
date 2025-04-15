@@ -148,7 +148,7 @@ export default function SearchService() {
               Location: {service.location}
             </p>
             <p className="text-sm text-gray-400">
-              Services Offered: {service.salonSpeciality}
+              Services Offered: {service.salonSpecialty}
             </p>
           </>
         );
@@ -241,7 +241,7 @@ export default function SearchService() {
                     <p className="text-gray-600 mb-4">{service.description}</p>
                     {renderServiceDetails(service)}
                     <p className="text-sm text-gray-400">
-                      Price: ${service.price}
+                      Price: QAR{service.price}
                     </p>
                     <div className="h-full flex flex-col">
                       <button

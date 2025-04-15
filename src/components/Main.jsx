@@ -591,9 +591,9 @@ const RequestPartner = ({
                 </td>
                 <td className="px-6 py-4">
                   <div className="flex items-center gap-2">
-                    <DollarSign className="h-4 w-4 text-gray-400" />
+
                     <span className="text-gray-600 dark:text-gray-300">
-                      {request.price}
+                    QAR {request.price}
                     </span>
                   </div>
                 </td>

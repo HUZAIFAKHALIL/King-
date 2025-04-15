@@ -2,15 +2,14 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { BuildingIcon, UsersIcon, ScissorsIcon, TreePineIcon, PlaneIcon, PlayIcon, DumbbellIcon } from 'lucide-react';
-import Select from 'react-select'; // Import React-Select
+import Select from 'react-select';
 
 export default function ReserveService({ params }) {
   const { id } = params;
   const [loading, setLoading] = useState(false);
   const [service, setService] = useState(null);
-  const [selectedOptions, setSelectedOptions] = useState([]); // Changed to array for multiple selections
-  const [startDate, setStartDate] = useState("");
-  const [endDate, setEndDate] = useState("");
+  const [selectedOptions, setSelectedOptions] = useState([]);
+  const [dates, setDates] = useState([]); // Array of { startTime, endTime } for each service
   const [quantity, setQuantity] = useState(1);
   const [error, setError] = useState("");
   const [totalPrice, setTotalPrice] = useState(0);
@@ -28,7 +27,6 @@ export default function ReserveService({ params }) {
         .then((data) => {
           if (data) {
             setService({ ...data.service, specificService: data.specificService });
-            // Initialize total price based on no selection initially
             setTotalPrice(0);
           } else {
             console.error("Service not found");
@@ -58,15 +56,22 @@ export default function ReserveService({ params }) {
     }
   }, [selectedOptions, quantity, service]);
 
-  const handleStartDateChange = (e) => {
-    setStartDate(e.target.value);
-    if (new Date(e.target.value) > new Date(endDate)) {
-      setEndDate("");
-    }
-  };
+  useEffect(() => {
+    // Sync dates array with selected options
+    setDates((prevDates) =>
+      selectedOptions.map((_, index) => prevDates[index] || { startTime: "", endTime: "" })
+    );
+  }, [selectedOptions]);
 
-  const handleEndDateChange = (e) => {
-    setEndDate(e.target.value);
+  const handleDateChange = (index, field, value) => {
+    setDates((prevDates) => {
+      const newDates = [...prevDates];
+      newDates[index] = { ...newDates[index], [field]: value };
+      if (field === "startTime" && newDates[index].endTime && new Date(value) > new Date(newDates[index].endTime)) {
+        newDates[index].endTime = "";
+      }
+      return newDates;
+    });
   };
 
   const handleQuantityChange = (e) => {
@@ -79,21 +84,25 @@ export default function ReserveService({ params }) {
   };
 
   const validateForm = () => {
-    if (!startDate) {
-      setError("Start date is required.");
-      return false;
-    }
-    if (['hotel', 'car', 'hall'].includes(service.type) && !endDate) {
-      setError("End date is required.");
-      return false;
-    }
-    if (endDate && new Date(startDate) >= new Date(endDate)) {
-      setError("End date should be later than start date.");
-      return false;
-    }
     if (selectedOptions.length === 0 && service.specificService?.length > 0) {
       setError("Please select at least one service type.");
       return false;
+    }
+
+    for (let i = 0; i < selectedOptions.length; i++) {
+      const { startTime, endTime } = dates[i] || {};
+      if (!startTime) {
+        setError(`Start date is required for ${getSpecificServiceName(selectedOptions[i], service.type)}.`);
+        return false;
+      }
+      if (['hotel', 'car', 'hall'].includes(service.type) && !endTime) {
+        setError(`End date is required for ${getSpecificServiceName(selectedOptions[i], service.type)}.`);
+        return false;
+      }
+      if (endTime && new Date(startTime) >= new Date(endTime)) {
+        setError(`End date should be later than start date for ${getSpecificServiceName(selectedOptions[i], service.type)}.`);
+        return false;
+      }
     }
     setError("");
     return true;
@@ -106,28 +115,36 @@ export default function ReserveService({ params }) {
       return;
     }
 
+    // Create one Reservation with multiple ReservationItems
     const reservation = {
       userId: userId,
       userEmail: userEmail,
-      serviceId: id,
-      serviceName: service.name,
-      serviceType: service.type,
-      startDate,
-      endDate: endDate || startDate,
+      status: "pending",
       totalPrice: withDriver ? totalPrice + 5 : totalPrice,
-      quantity: quantity,
-      specificServices: selectedOptions.map(option => ({
-        ...option,
-        name: getSpecificServiceName(option, service.type),
-      })), // Store multiple selected services
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+      reservationItems: selectedOptions.map((option, index) => ({
+        serviceId: id,
+        price: option.price * quantity,
+        startTime: dates[index].startTime,
+        endTime: dates[index].endTime || dates[index].startTime,
+        specificService: {
+          ...option,
+          name: getSpecificServiceName(option, service.type),
+        },
+        editable: true,
+        isFilled: false,
+        isPublic: true,
+      })),
     };
 
+    // Store in localStorage
     const existingReservations = JSON.parse(localStorage.getItem(userEmail)) || [];
     const updatedReservations = [...existingReservations, reservation];
     localStorage.setItem(userEmail, JSON.stringify(updatedReservations));
 
-    setStartDate("");
-    setEndDate("");
+    // Reset form
+    setDates([]);
     setQuantity(1);
     setSelectedOptions([]);
     alert("Reservation saved successfully!");
@@ -140,9 +157,9 @@ export default function ReserveService({ params }) {
         return `${option.roomType} Room`;
       case 'car':
         return option.carModel;
-      case "gym":
+      case 'gym':
         return `One ${option.membershipTypes} Pass`;
-      case "salon":
+      case 'salon':
         return option.salonSpecialty;
       case 'flight':
         return `${option.flightClass} Class`;
@@ -152,6 +169,8 @@ export default function ReserveService({ params }) {
         return option.activityType;
       case 'playground':
         return option.playgroundType;
+      case 'restaurant':
+        return `${option.diningOption} Dining`;
       default:
         return option.name || '';
     }
@@ -175,6 +194,8 @@ export default function ReserveService({ params }) {
         return <PlaneIcon className="w-5 h-5" />;
       case 'playground':
         return <PlayIcon className="w-5 h-5" />;
+      case 'restaurant':
+        return <BuildingIcon className="w-5 h-5" />;
       default:
         return <BuildingIcon className="w-5 h-5" />;
     }
@@ -183,49 +204,99 @@ export default function ReserveService({ params }) {
   const renderServiceSpecificFields = () => {
     if (!service) return null;
 
-    const commonFields = (
-      <div className="mt-4">
-        <label className="block text-sm font-semibold text-gray-700">Date:</label>
-        <input
-          type="datetime-local"
-          value={startDate}
-          onChange={handleStartDateChange}
-          className="mt-1 block w-full p-2 border border-gray-300 rounded-md"
-          min={new Date().toISOString().split('T')[0]}
-        />
-      </div>
-    );
+    if (selectedOptions.length === 0 && service.specificService?.length > 0) {
+      return null;
+    }
 
-    switch (service.type) {
-      case 'hotel':
-      case 'car':
-      case 'hall':
-        return (
-          <>
-            <div className="mt-4">
-              <label className="block text-sm font-semibold text-gray-700">Check-in/Start Date:</label>
+    if (selectedOptions.length === 1) {
+      const commonFields = (
+        <div className="mt-4">
+          <label className="block text-sm font-semibold text-gray-700">Date:</label>
+          <input
+            type="datetime-local"
+            value={dates[0]?.startTime || ""}
+            onChange={(e) => handleDateChange(0, "startTime", e.target.value)}
+            className="mt-1 block w-full p-2 border border-gray-300 rounded-md"
+            min={new Date().toISOString().slice(0, 16)}
+          />
+        </div>
+      );
+
+      switch (service.type) {
+        case 'hotel':
+        case 'car':
+        case 'hall':
+        case 'restaurant':
+          return (
+            <>
+              <div className="mt-4">
+                <label className="block text-sm font-semibold text-gray-700">Start Date:</label>
+                <input
+                  type="datetime-local"
+                  value={dates[0]?.startTime || ""}
+                  onChange={(e) => handleDateChange(0, "startTime", e.target.value)}
+                  className="mt-1 block w-full p-2 border border-gray-300 rounded-md"
+                  min={new Date().toISOString().slice(0, 16)}
+                />
+              </div>
+              <div className="mt-4">
+                <label className="block text-sm font-semibold text-gray-700">End Date:</label>
+                <input
+                  type="datetime-local"
+                  value={dates[0]?.endTime || ""}
+                  onChange={(e) => handleDateChange(0, "endTime", e.target.value)}
+                  className="mt-1 block w-full p-2 border border-gray-300 rounded-md"
+                  min={dates[0]?.startTime || new Date().toISOString().slice(0, 16)}
+                />
+              </div>
+            </>
+          );
+        default:
+          return commonFields;
+      }
+    } else {
+      return selectedOptions.map((option, index) => (
+        <div key={index} className="mt-4 border-t pt-4">
+          <h4 className="text-sm font-semibold text-gray-700">
+            Dates for {getSpecificServiceName(option, service.type)}:
+          </h4>
+          {['hotel', 'car', 'hall', 'restaurant'].includes(service.type) ? (
+            <>
+              <div className="mt-2">
+                <label className="block text-sm font-semibold text-gray-700">Start Date:</label>
+                <input
+                  type="datetime-local"
+                  value={dates[index]?.startTime || ""}
+                  onChange={(e) => handleDateChange(index, "startTime", e.target.value)}
+                  className="mt-1 block w-full p-2 border border-gray-300 rounded-md"
+                  min={new Date().toISOString().slice(0, 16)}
+                />
+              </div>
+              <div className="mt-2">
+                <label className="block text-sm font-semibold text-gray-700">End Date:</label>
+                <input
+                  type="datetime-local"
+                  value={dates[index]?.endTime || ""}
+                  onChange={(e) => handleDateChange(index, "endTime", e.target.value)}
+                  className="mt-1 block w-full p-2 border border-gray-300 rounded-md"
+                  min={dates[index]?.startTime || new Date().toISOString().slice(0, 16)}
+                />
+              </div>
+            </>
+          ) : (
+            <div className="mt-2">
+              <label className="block text-sm font-semibold text-gray-700">Date:</label>
               <input
                 type="datetime-local"
-                value={startDate}
-                onChange={handleStartDateChange}
+                value={dates[index]?.startTime || ""}
+                onChange={(e) => handleDateChange(index, "startTime", e.target.value)}
                 className="mt-1 block w-full p-2 border border-gray-300 rounded-md"
-                min={new Date().toISOString().split('T')[0]}
+                min={new Date().toISOString().slice(0, 16)}
               />
             </div>
-            <div className="mt-4">
-              <label className="block text-sm font-semibold text-gray-700">Check-out/End Date:</label>
-              <input
-                type="datetime-local"
-                value={endDate}
-                onChange={handleEndDateChange}
-                className="mt-1 block w-full p-2 border border-gray-300 rounded-md"
-                min={startDate || new Date().toISOString().split('T')[0]}
-              />
-            </div>
-          </>
-        );
-      default:
-        return commonFields;
+          )}
+        </div>
+      ));
     }
   };
 
@@ -255,6 +326,9 @@ export default function ReserveService({ params }) {
       case 'activity':
       case 'playground':
         label = 'Number of Tickets';
+        break;
+      case 'restaurant':
+        label = 'Number of Seats';
         break;
       default:
         label = 'Quantity';
@@ -305,12 +379,14 @@ export default function ReserveService({ params }) {
       case 'playground':
         label = 'Playground Type';
         break;
+      case 'restaurant':
+        label = 'Dining Option';
+        break;
       default:
         label = 'Options';
     }
 
-    // Format options for React-Select
-    const selectOptions = service.specificService.map(option => ({
+    const selectOptions = service.specificService.map((option) => ({
       value: option,
       label: `${getSpecificServiceName(option, service.type)} - QAR ${option.price}`,
       price: option.price,
@@ -323,13 +399,13 @@ export default function ReserveService({ params }) {
         <Select
           isMulti
           options={selectOptions}
-          value={selectedOptions.map(option => ({
+          value={selectedOptions.map((option) => ({
             value: option,
             label: `${getSpecificServiceName(option, service.type)} - QAR ${option.price}`,
             price: option.price,
             ...option,
           }))}
-          onChange={(selected) => setSelectedOptions(selected.map(item => item.value))}
+          onChange={(selected) => setSelectedOptions(selected.map((item) => item.value))}
           className="mt-1"
           placeholder={`Select ${label.toLowerCase()}...`}
           styles={{
@@ -378,9 +454,7 @@ export default function ReserveService({ params }) {
     <div className="p-6 bg-gray-50 min-h-screen">
       <div className="max-w-4xl mx-auto">
         <div className="flex items-center gap-3 mb-6">
-          <div className="p-2 bg-white rounded-lg shadow">
-            {getServiceIcon(service.type)}
-          </div>
+          <div className="p-2 bg-white rounded-lg shadow">{getServiceIcon(service.type)}</div>
           <h1 className="text-3xl font-bold">Reserve: {service.name}</h1>
         </div>
 

@@ -1,4 +1,3 @@
-// app/api/discounts/route.js
 import { NextResponse } from "next/server";
 import { PrismaClient } from "@prisma/client";
 
@@ -106,7 +105,6 @@ export async function POST(request) {
       );
     }
 
-    // Check if creating a signup or loyalty discount
     if (discountType === "signup") {
       // Check if user already has a signup discount
       const existingDiscount = await prisma.signupDiscount.findUnique({
@@ -120,12 +118,12 @@ export async function POST(request) {
         );
       }
 
-      // Create signup discount
+      // Create signup discount with 10% off
       const signupDiscount = await prisma.signupDiscount.create({
         data: {
           userId: parseInt(userId),
-          discount: parseFloat(discount),
-          discountType: "PERCENTAGE", // or "FIXED"
+          discount: 10.0, // Fixed 10% signup discount
+          discountType: "PERCENTAGE",
           isUsed: false
         }
       });
@@ -146,7 +144,7 @@ export async function POST(request) {
           where: { userId: parseInt(userId) },
           data: {
             discount: parseFloat(discount),
-            discountType: "PERCENTAGE", // or "FIXED"
+            discountType: "PERCENTAGE",
             threshold: threshold || existingDiscount.threshold
           }
         });
@@ -161,7 +159,7 @@ export async function POST(request) {
           data: {
             userId: parseInt(userId),
             discount: parseFloat(discount),
-            discountType: "PERCENTAGE", // or "FIXED"
+            discountType: "PERCENTAGE",
             threshold: threshold || 0
           }
         });
