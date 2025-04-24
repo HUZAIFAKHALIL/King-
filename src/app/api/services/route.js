@@ -1,6 +1,6 @@
 // src\app\api\services\route.js
 import { PrismaClient } from "@prisma/client";
-import nodemailer from 'nodemailer';
+import nodemailer from "nodemailer";
 
 const prisma = new PrismaClient();
 
@@ -23,7 +23,7 @@ function getServiceInclude(serviceType) {
     case "playground":
       return { playgroundServices: true };
     case "restaurant":
-      return { RestaurantService: true }; 
+      return { RestaurantService: true };
     default:
       return {}; // Return no additional relations for an unknown type
   }
@@ -60,7 +60,7 @@ export async function GET(request) {
       include: getServiceInclude(serviceType),
     });
 
-    console.log('Raw services:', JSON.stringify(services, null, 2));
+    console.log("Raw services:", JSON.stringify(services, null, 2));
 
     const transformedServices = services.map((service) => {
       const specificServiceKey = Object.keys(service).find((key) =>
@@ -120,13 +120,13 @@ async function sendServiceCreationEmail(service) {
     // Note: You'll need to adjust this based on your actual Prisma schema
     const seller = await prisma.user.findUnique({
       where: { id: service.sellerId },
-      select: { email: true, name: true }
+      select: { email: true, name: true },
     });
 
     // If no seller found, use a fallback email
     if (!seller || !seller.email) {
       console.warn(`No email found for seller ID: ${service.sellerId}`);
-      
+
       // Fallback email options
       const mailOptions = {
         from: "no-reply@qreserve.com",
@@ -138,7 +138,7 @@ Service Details:
 - ID: ${service.id}
 - Type: ${service.type}
 - Name: ${service.name}
-- Seller ID: ${service.sellerId}`
+- Seller ID: ${service.sellerId}`,
       };
 
       try {
@@ -146,7 +146,7 @@ Service Details:
       } catch (fallbackError) {
         console.error("Error sending fallback email:", fallbackError);
       }
-      
+
       return;
     }
 
@@ -154,16 +154,18 @@ Service Details:
     const mailOptions = {
       from: "no-reply@qreserve.com",
       to: seller.email,
-      cc: "huzaifa.hado@gmail.com",
+      cc: "kholoud.alshafai@gmail.com",
       subject: "Service Submission Confirmation",
-      text: `Dear ${seller.name || 'Seller'},
+      text: `Dear ${seller.name || "Seller"},
 
-Your service "${service.name}" has been submitted successfully and is currently pending admin approval.
+Your service "${
+        service.name
+      }" has been submitted successfully and is currently pending admin approval.
 
 Service Details:
 - Type: ${service.type}
 - Name: ${service.name}
-- Location: ${service.location || 'Not specified'}
+- Location: ${service.location || "Not specified"}
 
 Status: Waiting for Admin Review
 
@@ -176,14 +178,18 @@ QReserve Team`,
       html: `
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
           <h2>Service Submission Confirmation</h2>
-          <p>Dear ${seller.name || 'Seller'},</p>
-          <p>Your service "${service.name}" has been submitted successfully and is currently pending admin approval.</p>
+          <p>Dear ${seller.name || "Seller"},</p>
+          <p>Your service "${
+            service.name
+          }" has been submitted successfully and is currently pending admin approval.</p>
           
           <h3>Service Details:</h3>
           <ul>
             <li><strong>Type:</strong> ${service.type}</li>
             <li><strong>Name:</strong> ${service.name}</li>
-            <li><strong>Location:</strong> ${service.location || 'Not specified'}</li>
+            <li><strong>Location:</strong> ${
+              service.location || "Not specified"
+            }</li>
           </ul>
           
           <p><strong>Status:</strong> Waiting for Admin Review</p>
@@ -194,13 +200,12 @@ QReserve Team`,
           
           <p>Best regards,<br>QReserve Team</p>
         </div>
-      `
+      `,
     };
 
     // Send email
     await transporter.sendMail(mailOptions);
     console.log(`Email sent to ${seller.email} for service ${service.name}`);
-
   } catch (error) {
     console.error("Error in sendServiceCreationEmail:", error);
   }
@@ -354,7 +359,6 @@ export async function POST(request) {
 
     sendServiceCreationEmail(newService).catch(console.error);
 
-    
     return new Response(
       JSON.stringify({
         message: "Service created successfully",

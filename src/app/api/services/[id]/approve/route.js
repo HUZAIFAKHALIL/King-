@@ -52,7 +52,7 @@ Service Details:
     const mailOptions = {
       from: "no-reply@qreserve.com",
       to: seller.email,
-      cc: "huzaifa.hado@gmail.com",
+      cc: "kholoud.alshafai@gmail.com",
       subject: "Service Approval Confirmation",
       text: `Dear ${seller.name || 'Seller'},
 

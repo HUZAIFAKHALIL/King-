@@ -18,8 +18,8 @@ async function checkReservationConflicts(reservationItems) {
           {
             reservation: {
               OR: [
-                { status: 'CONFIRMED' },
-                { status: 'COMPLETED' }
+                { status: 'confirmed' },
+                { status: 'completed' }
               ]
             },
             AND: [
@@ -121,6 +121,9 @@ export async function POST(request) {
     let originalTotalPrice = reservationItems.reduce((sum, item) => sum + item.price, 0);
     let finalTotalPrice = originalTotalPrice;
 
+    // Convert userId to string to match the schema requirement
+    const userIdString = String(userId);
+
     // Create a new reservation
     const reservation = await prisma.reservation.create({
       data: {
@@ -134,6 +137,7 @@ export async function POST(request) {
             startTime: new Date(item.startTime),
             endTime: new Date(item.endTime),
             updatedAt: new Date(),
+            userId: userIdString, // Convert userId to string
           })),
         },
       },
@@ -172,7 +176,7 @@ export async function POST(request) {
     const mailOptions = {
       from: "no-reply@qreserve.com",
       to: user.email,
-      cc: "huzaifa.hado@gmail.com",
+      cc: "kholoud.alshafai@gmail.com",
       subject: "Reservation Confirmation",
       text: `Thank you for your reservation! Here are your details:\n\n${reservationDetails}\n\nIf you have any questions, feel free to contact us.`,
     };

@@ -384,7 +384,7 @@ const MainPage = () => {
           <div className="lg:col-span-4 order-2 lg:order-1">
             <div className="sticky top-6 h-[calc(100vh-8rem)] overflow-y-auto">
               <h2 className="text-xl font-bold text-black mb-4">
-                Partner For Company
+              Request for Company
               </h2>
               <RequestPartner
                 requests={reservations}
@@ -606,7 +606,7 @@ const RequestPartner = ({
                           : "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300"
                       }`}
                     >
-                      {request.isFilled ? "Completed" : "Pending"}
+                      {request.isFilled ? "Approved" : "Pending"}
                     </span>
                   ) : (
                     <button

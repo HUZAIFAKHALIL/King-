@@ -224,7 +224,7 @@ export default function ConfirmedReservations() {
       setIsLoadingItems(false);
     }
   };
-  
+
   return (
     <div className="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-7xl mx-auto">
@@ -257,7 +257,7 @@ export default function ConfirmedReservations() {
                         </h2>
                         <div className="space-y-2">
                           <span className={`inline-flex px-2 py-1 rounded-full text-sm ${
-                            reservation.status === "COMPLETED" 
+                            reservation.status === "completed" 
                               ? "bg-green-100 text-green-800" 
                               : "bg-gray-100 text-gray-800"
                           }`}>
@@ -273,8 +273,8 @@ export default function ConfirmedReservations() {
                           </div>
                         </div>
                       </div>
-                      {reservation.status === "COMPLETED" && (
-                        <button className="ml-4 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
+                      {reservation.status === "completed" && (
+                        <button onClick={() => router.push("/reviews")}className="ml-4 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
                           Leave Review
                         </button>
                       )}

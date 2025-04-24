@@ -48,7 +48,7 @@ export async function GET(req, { params }) {
         rating: true,
         comment: true,
         createdAt: true,
-        user: {
+        User: {
           select: {
             id: true,
             name: true,

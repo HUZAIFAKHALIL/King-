@@ -47,7 +47,7 @@ export async function GET(req, res) {
       const mailOptions = {
         from: "no-reply@qreserve.com",
         to: user.email,
-        cc: "huzaifa.hado@gmail.com",
+        cc: "kholoud.alshafai@gmail.com",
         subject: "⏳ Reminder: Your Reservation Starts Tomorrow!",
         text: `Hello ${user.name},\n\n📅 Your reservation is starting soon!\n\n🗓 Start Date: ${startDate}\n\nWe look forward to seeing you!\n\nBest Regards,\nQReserve Team`,
       };
