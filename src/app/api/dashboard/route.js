@@ -1,7 +1,10 @@
+// src\app\api\dashboard\route.js
 import { PrismaClient } from '@prisma/client';
 import { NextResponse } from 'next/server';
 
+export const dynamic = 'force-dynamic';
 const prisma = new PrismaClient();
+
 
 // Helper function to safely serialize BigInt values
 function serializeData(data) {

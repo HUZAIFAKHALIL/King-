@@ -1,9 +1,11 @@
+// src/app/(auth)/reset-password/page.jsx
 "use client";
-import { useState } from "react";
+import { useState, Suspense } from "react"; // Import Suspense
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 
-export default function NewPassword() {
+// Create a component that uses useSearchParams
+function ResetPasswordContent() {
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [error, setError] = useState("");
@@ -15,9 +17,10 @@ export default function NewPassword() {
   const isBrowser = typeof window !== "undefined";
   const loggedInToken = isBrowser ? localStorage.getItem("token") : null;
 
-  // you are already logged in
+  // Redirect if already logged in
   if (loggedInToken) {
-    return router.push("/");
+    router.push("/");
+    return null; // Prevent rendering until redirect
   }
 
   const handleSubmit = async (e) => {
@@ -45,9 +48,6 @@ export default function NewPassword() {
     } else {
       setMessage(data.error);
     }
-
-    // Redirect or provide success feedback
-    // (e.g., redirect to login or show success message)
   };
 
   return (
@@ -112,5 +112,14 @@ export default function NewPassword() {
         {message && <p>{message}</p>}
       </div>
     </div>
+  );
+}
+
+// Default export with Suspense boundary
+export default function NewPassword() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <ResetPasswordContent />
+    </Suspense>
   );
 }

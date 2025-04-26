@@ -489,9 +489,6 @@ const RequestPartner = ({
   type,
 }) => {
 
-
-   console.log(requests , userID , handleUpdateReservation , type , "SDAsdajsdajdsajdasj");
-   
   const formatDate = (dateString) => {
     try {
       const date = parseISO(dateString);
